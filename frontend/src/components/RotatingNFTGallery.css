@@ -1,0 +1,71 @@
+.rotating-gallery {
+  position: relative;
+  width: 100%;
+  height: 340px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1000px;
+  overflow: hidden;
+}
+
+.rotating-gallery__track {
+  display: flex;
+  gap: 16px;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.rotating-gallery__card {
+  flex-shrink: 0;
+  width: 200px;
+  height: 260px;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  transition: transform 0.3s var(--ease), opacity 0.3s;
+  cursor: pointer;
+}
+
+.rotating-gallery__card:hover {
+  transform: scale(1.04);
+}
+
+.rotating-gallery__card canvas {
+  width: 100%;
+  height: 180px;
+  display: block;
+}
+
+.rotating-gallery__card-label {
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--c-text-2);
+  border-top: 1px solid var(--c-border);
+}
+
+.rotating-gallery__controls {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.rotating-gallery__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--c-surface-3);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  border: none;
+  padding: 0;
+}
+
+.rotating-gallery__dot.active {
+  background: var(--c-accent);
+  transform: scale(1.3);
+}

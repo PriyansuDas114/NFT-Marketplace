@@ -1,0 +1,21 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model NFT {
+  id          Int      @id @default(autoincrement())
+  tokenId     String   @unique
+  name        String
+  description String
+  price       Float
+  image       String
+  ipfsUrl     String
+  owner       String
+  listed      Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+}

@@ -1,0 +1,104 @@
+.gallery-page { }
+
+.gallery-header { margin-bottom: var(--sp-8); }
+.gallery-header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
+.gallery-header p  { font-size: 14px; color: var(--c-text-2); }
+
+/* Controls */
+.gallery-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-6);
+  flex-wrap: wrap;
+}
+
+.gallery-controls .label { margin: 0; white-space: nowrap; }
+
+.color-swatch-bar {
+  display: flex;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.color-swatch {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.15s var(--ease), border-color 0.15s;
+  flex-shrink: 0;
+}
+
+.color-swatch:hover { transform: scale(1.18); }
+.color-swatch.active { border-color: var(--c-text-1); transform: scale(1.12); }
+
+.gallery-regen-btn {
+  margin-left: auto;
+}
+
+/* Grid */
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--sp-4);
+}
+
+/* Card */
+.gallery-item {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  transition: transform 0.22s var(--ease), border-color 0.22s, box-shadow 0.22s;
+  animation: fadeUp 0.35s var(--ease) both;
+}
+
+.gallery-item:hover {
+  transform: translateY(-5px);
+  border-color: var(--c-border-2);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+}
+
+.gallery-canvas-wrap {
+  width: 100%;
+  aspect-ratio: 1/1;
+  display: block;
+  background: var(--c-surface-2);
+  overflow: hidden;
+  position: relative;
+}
+
+.gallery-canvas-wrap canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+.gallery-item__footer {
+  padding: 12px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--c-border);
+}
+
+.gallery-item__name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--c-text-1);
+}
+
+.gallery-item__tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--c-text-3);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-full);
+  padding: 2px 8px;
+}
+
+@media (max-width: 600px) {
+  .gallery-grid { grid-template-columns: 1fr 1fr; }
+}

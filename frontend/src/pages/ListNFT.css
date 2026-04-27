@@ -1,0 +1,181 @@
+.list-page { }
+
+.list-header { margin-bottom: var(--sp-8); }
+.list-header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
+.list-header p  { font-size: 14px; color: var(--c-text-2); }
+
+/* Step indicator */
+.list-steps {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: var(--sp-8);
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: 13px;
+  color: var(--c-text-3);
+}
+
+.step.active { color: var(--c-text-1); }
+.step.done   { color: var(--c-accent); }
+
+.step-num {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--c-surface-2);
+  border: 1px solid var(--c-border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600;
+  flex-shrink: 0;
+}
+
+.step.active .step-num { background: var(--c-accent-dim); border-color: var(--c-accent); color: var(--c-accent); }
+.step.done   .step-num { background: var(--c-accent); border-color: var(--c-accent); color: #fff; }
+
+.step-divider { flex: 1; height: 1px; background: var(--c-border); margin: 0 var(--sp-3); min-width: 24px; }
+
+/* Layout */
+.list-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: var(--sp-6);
+  align-items: start;
+}
+
+/* NFT picker */
+.nft-picker-card {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-xl);
+  padding: var(--sp-5);
+}
+
+.nft-picker-card h2 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--c-text-1);
+  margin-bottom: var(--sp-4);
+}
+
+.nft-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--sp-3);
+}
+
+.picker-nft {
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.18s, transform 0.18s;
+  background: var(--c-surface-2);
+}
+
+.picker-nft:hover {
+  border-color: var(--c-border-2);
+  transform: translateY(-2px);
+}
+
+.picker-nft.selected {
+  border-color: var(--c-accent);
+  box-shadow: 0 0 0 1px var(--c-accent);
+}
+
+.picker-nft img {
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  display: block;
+  background: var(--c-surface-3);
+}
+
+.picker-nft__label {
+  padding: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--c-text-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Empty state in picker */
+.picker-empty {
+  grid-column: 1/-1;
+  padding: 48px 20px;
+  text-align: center;
+  color: var(--c-text-3);
+  font-size: 14px;
+}
+
+/* Listing panel */
+.listing-panel {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  position: sticky;
+  top: calc(var(--header-h) + var(--sp-6));
+}
+
+.listing-panel__placeholder {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--c-text-3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.listing-panel__placeholder svg { width: 40px; height: 40px; color: var(--c-text-3); }
+.listing-panel__placeholder p { font-size: 14px; }
+
+/* Selected NFT detail */
+.listing-detail { display: flex; flex-direction: column; }
+
+.listing-detail__img {
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  display: block;
+  background: var(--c-surface-2);
+}
+
+.listing-detail__body {
+  padding: var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.listing-detail__name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--c-text-1);
+  letter-spacing: -0.01em;
+}
+
+.listing-form { display: flex; flex-direction: column; gap: var(--sp-4); }
+
+.listing-status {
+  padding: 10px 14px;
+  border-radius: var(--r-md);
+  font-size: 13px;
+  font-weight: 500;
+  animation: fadeUp 0.25s var(--ease);
+}
+
+.listing-status.success { background: var(--c-green-dim); color: var(--c-green); border: 1px solid rgba(34,197,94,0.2); }
+.listing-status.error   { background: var(--c-red-dim);   color: var(--c-red);   border: 1px solid rgba(239,68,68,0.2); }
+.listing-status.info    { background: var(--c-accent-dim); color: var(--c-accent); border: 1px solid rgba(249,115,22,0.2); }
+
+@media (max-width: 900px) {
+  .list-layout { grid-template-columns: 1fr; }
+  .listing-panel { position: static; }
+}

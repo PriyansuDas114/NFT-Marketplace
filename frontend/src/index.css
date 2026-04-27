@@ -1,0 +1,149 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Familjen+Grotesk:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+/* ─────────────────────────────────────────
+   NEXMINT DESIGN SYSTEM — TOKENS
+───────────────────────────────────────── */
+
+:root {
+  --c-bg:          #0b0b0d;
+  --c-surface:     #111116;
+  --c-surface-2:   #17171e;
+  --c-surface-3:   #1e1e28;
+  --c-border:      rgba(255,255,255,0.07);
+  --c-border-2:    rgba(255,255,255,0.13);
+
+  --c-accent:      #f97316;
+  --c-accent-dim:  rgba(249,115,22,0.15);
+  --c-accent-glow: rgba(249,115,22,0.25);
+
+  --c-violet:      #8b5cf6;
+  --c-violet-dim:  rgba(139,92,246,0.12);
+
+  --c-green:       #22c55e;
+  --c-green-dim:   rgba(34,197,94,0.12);
+  --c-red:         #ef4444;
+  --c-red-dim:     rgba(239,68,68,0.12);
+  --c-gold:        #eab308;
+
+  --c-text-1:  #f0ede8;
+  --c-text-2:  #9d9aa0;
+  --c-text-3:  #5c5960;
+
+  --font-display: 'Familjen Grotesk', system-ui, sans-serif;
+  --font-mono:    'DM Mono', 'Courier New', monospace;
+
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px;
+  --sp-12: 48px; --sp-16: 64px;
+
+  --r-sm: 6px;  --r-md: 12px; --r-lg: 18px;
+  --r-xl: 24px; --r-full: 9999px;
+
+  --sidebar-w: 68px;
+  --sidebar-w-open: 220px;
+  --header-h: 64px;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+body { font-family: var(--font-display); background: var(--c-bg); color: var(--c-text-1); line-height: 1.6; overflow-x: hidden; }
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--c-surface-3); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--c-border-2); }
+
+::selection { background: var(--c-accent-dim); color: var(--c-accent); }
+:focus-visible { outline: 2px solid var(--c-accent); outline-offset: 3px; border-radius: var(--r-sm); }
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@keyframes shimmer { 0% { background-position:-200% 0; } 100% { background-position:200% 0; } }
+@keyframes spin { to { transform:rotate(360deg); } }
+@keyframes countUp { from { transform:translateY(8px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+
+.skeleton {
+  background: linear-gradient(90deg, var(--c-surface-2) 25%, var(--c-surface-3) 50%, var(--c-surface-2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
+  border-radius: var(--r-md);
+}
+
+.app-layout { display: flex; min-height: 100vh; }
+
+.main-content {
+  flex: 1; min-width: 0;
+  margin-left: var(--sidebar-w);
+  transition: margin-left 0.25s var(--ease);
+  display: flex; flex-direction: column;
+}
+
+.page-content-wrapper {
+  flex: 1;
+  padding: var(--sp-6);
+  padding-top: calc(var(--header-h) + var(--sp-6));
+}
+
+.glass {
+  background: rgba(17,17,22,0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--c-border);
+}
+
+.card { background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--r-lg); }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
+  font-family: var(--font-display); font-size: 14px; font-weight: 600;
+  border: none; cursor: pointer; border-radius: var(--r-md);
+  padding: 10px 20px; transition: all 0.2s var(--ease); white-space: nowrap;
+  line-height: 1;
+}
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-primary { background: var(--c-accent); color: #fff; }
+.btn-primary:hover:not(:disabled) { background: #ea6c10; transform: translateY(-1px); box-shadow: 0 4px 24px var(--c-accent-glow); }
+.btn-primary:active:not(:disabled) { transform: translateY(0); }
+.btn-ghost { background: transparent; color: var(--c-text-2); border: 1px solid var(--c-border); }
+.btn-ghost:hover:not(:disabled) { background: var(--c-surface-2); color: var(--c-text-1); border-color: var(--c-border-2); }
+.btn-outline { background: transparent; color: var(--c-accent); border: 1px solid var(--c-accent); }
+.btn-outline:hover:not(:disabled) { background: var(--c-accent-dim); }
+.btn-sm { padding: 7px 14px; font-size: 13px; }
+.btn-lg { padding: 14px 28px; font-size: 15px; }
+.btn-full { width: 100%; }
+
+.input {
+  width: 100%; background: var(--c-surface-2); border: 1px solid var(--c-border);
+  color: var(--c-text-1); font-family: var(--font-display); font-size: 14px;
+  padding: 12px 16px; border-radius: var(--r-md);
+  transition: border-color 0.2s var(--ease), background 0.2s; outline: none;
+}
+.input::placeholder { color: var(--c-text-3); }
+.input:focus { border-color: var(--c-accent); background: var(--c-surface-3); }
+textarea.input { resize: vertical; min-height: 100px; line-height: 1.6; }
+select.input { cursor: pointer; appearance: none; }
+
+.label {
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.09em; color: var(--c-text-3); display: block; margin-bottom: 6px;
+}
+
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 500;
+  padding: 3px 9px; border-radius: var(--r-full); border: 1px solid;
+}
+.badge-accent { color: var(--c-accent); border-color: rgba(249,115,22,0.3); background: var(--c-accent-dim); }
+.badge-green  { color: var(--c-green);  border-color: rgba(34,197,94,0.3);  background: var(--c-green-dim); }
+.badge-violet { color: var(--c-violet); border-color: rgba(139,92,246,0.3); background: var(--c-violet-dim); }
+.badge-muted  { color: var(--c-text-3); border-color: var(--c-border);      background: var(--c-surface-2); }
+
+.page-enter { animation: fadeUp 0.35s var(--ease) both; }
+.divider { height: 1px; background: var(--c-border); border: none; }
+
+@media (max-width: 768px) {
+  .main-content { margin-left: 0; }
+  .page-content-wrapper { padding: var(--sp-4); padding-top: calc(var(--header-h) + var(--sp-4)); }
+}

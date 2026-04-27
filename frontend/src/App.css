@@ -1,0 +1,6 @@
+/* App.css — layout only, tokens live in index.css */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--c-bg);
+}
