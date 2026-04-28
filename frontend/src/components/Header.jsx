@@ -19,8 +19,16 @@ const WalletIcon = () => (
   </svg>
 );
 
+const SearchIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="11" cy="11" r="8"/>
+    <path d="m21 21-4.35-4.35"/>
+  </svg>
+);
+
 const Header = () => {
   const [account, setAccount] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
   const title = pageTitles[location.pathname] || 'NexMint';
 
@@ -63,12 +71,17 @@ const Header = () => {
     <header className="app-header">
       <div className="header-left">
         <span className="header-page-title">{title}</span>
+        <div className="search-bar">
+          <SearchIcon />
+          <input
+            type="text"
+            placeholder="Search NFTs, collections, wallets..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
       </div>
       <div className="header-right">
-        <div className="network-pill">
-          <span className="network-dot" />
-          Hardhat
-        </div>
         {account ? (
           <div className="wallet-chip" title={account}>
             <div className="wallet-avatar" />

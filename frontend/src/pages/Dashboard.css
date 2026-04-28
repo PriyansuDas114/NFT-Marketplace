@@ -3,8 +3,9 @@
 /* Page header */
 .dash-header { margin-bottom: var(--sp-8); }
 .dash-header h1 {
-  font-size: 28px; font-weight: 700; color: var(--c-text-1);
-  letter-spacing: -0.02em; margin-bottom: 4px;
+  font-family: var(--font-display);
+  font-size: 32px; font-weight: 400; color: var(--c-text-1);
+  letter-spacing: 0.04em; margin-bottom: 4px;
 }
 .dash-header p { font-size: 14px; color: var(--c-text-2); }
 

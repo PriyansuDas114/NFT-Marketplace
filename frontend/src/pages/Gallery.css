@@ -1,7 +1,10 @@
 .gallery-page { }
 
 .gallery-header { margin-bottom: var(--sp-8); }
-.gallery-header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 4px; }
+.gallery-header h1 {
+  font-family: var(--font-display);
+  font-size: 32px; font-weight: 400; letter-spacing: 0.04em; margin-bottom: 4px;
+}
 .gallery-header p  { font-size: 14px; color: var(--c-text-2); }
 
 /* Controls */

@@ -16,13 +16,19 @@
   transition: left 0.25s var(--ease);
 }
 
-.header-left { display: flex; align-items: center; gap: var(--sp-4); }
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  flex: 1;
+}
 
 .header-page-title {
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
+  font-family: var(--font-display);
   color: var(--c-text-1);
-  letter-spacing: -0.01em;
+  letter-spacing: 0.02em;
 }
 
 .header-breadcrumb {
@@ -37,41 +43,45 @@
   gap: var(--sp-3);
 }
 
-/* Network pill */
-.network-pill {
+/* Search bar */
+.search-bar {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   background: var(--c-surface-2);
   border: 1px solid var(--c-border);
-  border-radius: var(--r-full);
-  padding: 6px 12px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--c-text-2);
+  border-radius: var(--r-md);
+  padding: 8px 12px;
+  flex: 1;
+  min-width: 200px;
+  max-width: 400px;
+  color: var(--c-text-3);
+  transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
 }
 
-.network-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--c-green);
-  position: relative;
+.search-bar:focus-within {
+  border-color: var(--c-accent);
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
 }
 
-.network-dot::after {
-  content: '';
-  position: absolute;
-  inset: -3px;
-  border-radius: 50%;
-  background: var(--c-green);
-  opacity: 0.3;
-  animation: ping 2s infinite;
+.search-bar svg {
+  flex-shrink: 0;
+  color: var(--c-text-3);
 }
 
-@keyframes ping {
-  0%   { transform: scale(1); opacity: 0.3; }
-  100% { transform: scale(2.2); opacity: 0; }
+.search-bar input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--c-text-1);
+  min-width: 0;
+}
+
+.search-bar input::placeholder {
+  color: var(--c-text-3);
 }
 
 /* Wallet button / chip */
@@ -84,7 +94,7 @@
   border: none;
   border-radius: var(--r-md);
   padding: 9px 16px;
-  font-family: var(--font-display);
+  font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;

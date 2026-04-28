@@ -1,42 +1,34 @@
 import { NavLink } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import './Sidebar.css';
 
 const icons = {
   dashboard: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="3" width="7" height="7" rx="1.5"/>
-      <rect x="14" y="3" width="7" height="7" rx="1.5"/>
-      <rect x="3" y="14" width="7" height="7" rx="1.5"/>
-      <rect x="14" y="14" width="7" height="7" rx="1.5"/>
-    </svg>
-  ),
-  mint: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-      <path d="M2 17l10 5 10-5"/>
-      <path d="M2 12l10 5 10-5"/>
-    </svg>
-  ),
-  list: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
-      <rect x="9" y="3" width="6" height="4" rx="1"/>
-      <line x1="9" y1="12" x2="15" y2="12"/>
-      <line x1="9" y1="16" x2="13" y2="16"/>
+    <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <rect x="2" y="2" width="6" height="6" rx="1.5"/><rect x="10" y="2" width="6" height="6" rx="1.5"/>
+      <rect x="2" y="10" width="6" height="6" rx="1.5"/><rect x="10" y="10" width="6" height="6" rx="1.5"/>
     </svg>
   ),
   explore: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="11" cy="11" r="8"/>
-      <path d="M21 21l-4.35-4.35"/>
+    <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <circle cx="8" cy="8" r="5"/><path d="M13 13L16 16" strokeLinecap="round"/>
     </svg>
   ),
   gallery: (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="3" width="18" height="18" rx="2"/>
-      <circle cx="8.5" cy="8.5" r="1.5"/>
-      <path d="M21 15l-5-5L5 21"/>
+    <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <rect x="2" y="2" width="14" height="10" rx="2"/><path d="M6 16h6M9 12v4" strokeLinecap="round"/>
+    </svg>
+  ),
+  mint: (
+    <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <circle cx="9" cy="9" r="7"/><path d="M9 6v6M6 9h6" strokeLinecap="round"/>
+    </svg>
+  ),
+  list: (
+    <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M2 5h14M2 9h10M2 13h6" strokeLinecap="round"/>
+      <circle cx="14" cy="13" r="3"/>
+      <path d="M14 11.5v1.5l1 1" strokeLinecap="round"/>
     </svg>
   ),
   chevron: (
@@ -46,64 +38,67 @@ const icons = {
   ),
 };
 
-const navItems = [
-  { to: '/',        label: 'Dashboard', icon: 'dashboard' },
-  { to: '/mint',    label: 'Mint NFT',  icon: 'mint' },
-  { to: '/list',    label: 'List NFT',  icon: 'list' },
-  { to: '/explore', label: 'Explore',   icon: 'explore' },
-  { to: '/gallery', label: 'Gallery',   icon: 'gallery' },
+const navSections = [
+  {
+    label: 'Marketplace',
+    items: [
+      { to: '/', label: 'Dashboard', icon: 'dashboard' },
+      { to: '/explore', label: 'Explore', icon: 'explore' },
+      { to: '/gallery', label: 'Gallery', icon: 'gallery' },
+    ]
+  },
+  {
+    label: 'My Tokens',
+    items: [
+      { to: '/mint', label: 'Mint NFT', icon: 'mint' },
+      { to: '/list', label: 'List NFT', icon: 'list' },
+    ]
+  }
 ];
 
 const Sidebar = () => {
-  const [expanded, setExpanded] = useState(() =>
-    localStorage.getItem('sidebar-expanded') === 'true'
-  );
-
-  useEffect(() => {
-    localStorage.setItem('sidebar-expanded', expanded);
-  }, [expanded]);
+  const [expanded, setExpanded] = useState(false);
 
   return (
     <>
       <div className={`sidebar-overlay ${expanded ? 'visible' : ''}`}
            onClick={() => setExpanded(false)} />
-      <div className="sidebar-wrapper">
+      <div 
+        className="sidebar-wrapper"
+        onMouseEnter={() => setExpanded(true)}
+        onMouseLeave={() => setExpanded(false)}
+      >
         <aside className={`sidebar ${expanded ? 'expanded' : ''}`}>
           {/* Logo */}
           <NavLink to="/" className="sidebar-logo">
             <div className="sidebar-logo-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 2L15 5.5V12.5L9 16L3 12.5V5.5L9 2Z" fill="white" fillOpacity="0.9"/>
+                <path d="M9 6L12 7.75V11.25L9 13L6 11.25V7.75L9 6Z" fill="#ff4d00"/>
               </svg>
             </div>
-            <span className="sidebar-logo-text">NexMint</span>
+            <span className="sidebar-logo-text">NEXMINT</span>
           </NavLink>
 
           {/* Nav */}
-          <nav className="nav-links">
-            {navItems.map(({ to, label, icon }) => (
-              <NavLink
-                key={to}
-                to={to}
-                end={to === '/'}
-                className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
-              >
-                <span className="nav-link-icon">{icons[icon]}</span>
-                <span className="nav-item">{label}</span>
-              </NavLink>
+          <nav className="sidebar-nav">
+            {navSections.map((section, idx) => (
+              <div key={idx}>
+                <span className="nav-section-label">{section.label}</span>
+                {section.items.map(({ to, label, icon }) => (
+                  <NavLink
+                    key={to}
+                    to={to}
+                    end={to === '/'}
+                    className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
+                  >
+                    <span className="nav-link-icon">{icons[icon]}</span>
+                    <span className="nav-item">{label}</span>
+                  </NavLink>
+                ))}
+              </div>
             ))}
           </nav>
-
-          {/* Toggle */}
-          <div className="sidebar-toggle">
-            <button
-              className="sidebar-toggle-btn"
-              onClick={() => setExpanded(p => !p)}
-              title={expanded ? 'Collapse sidebar' : 'Expand sidebar'}
-            >
-              {icons.chevron}
-            </button>
-          </div>
         </aside>
       </div>
     </>

@@ -1,0 +1,47 @@
+.network-banner {
+  position: fixed;
+  top: var(--header-h);
+  left: var(--sidebar-w);
+  right: 0;
+  z-index: 140;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 10px var(--sp-6);
+  background: rgba(239,68,68,0.12);
+  border-bottom: 1px solid rgba(239,68,68,0.25);
+  animation: fadeIn 0.2s var(--ease);
+}
+
+.network-banner__icon {
+  font-size: 14px;
+  flex-shrink: 0;
+  color: var(--c-red);
+}
+
+.network-banner__text {
+  font-size: 13px;
+  color: var(--c-red);
+  flex: 1;
+}
+
+.network-banner__btn {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: rgba(239,68,68,0.2);
+  border: 1px solid rgba(239,68,68,0.4);
+  color: var(--c-red);
+  padding: 5px 12px;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.network-banner__btn:hover {
+  background: rgba(239,68,68,0.3);
+}
+
+@media (max-width: 768px) {
+  .network-banner { left: 0; padding: 10px var(--sp-4); }
+}
