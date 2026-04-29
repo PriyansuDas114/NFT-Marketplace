@@ -1,18 +1,39 @@
-import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+import { prisma } from '../config/db.js';
 
-export const getMetrics = async () => {
-  const [mintedNFTs, totalVolume, activeUsers, listedNFTs] = await Promise.all([
-    prisma.nFT.count(),
-    prisma.nFT.aggregate({ _sum: { price: true } }),
-    prisma.nFT.findMany({ distinct: ['owner'] }),
-    prisma.nFT.count({ where: { listed: true } }),
-  ]);
+/**
+ * metricModel — Prisma-based metrics management
+ */
 
-  return {
-    mintedNFTs,
-    totalVolume: totalVolume._sum.price || 0,
-    activeUsers: activeUsers.length,
-    listedNFTs
-  };
+export const getOrCreateMetrics = async () => {
+  let metric = await prisma.metric.findFirst();
+  if (!metric) {
+    metric = await prisma.metric.create({
+      data: {},
+    });
+  }
+  return metric;
+};
+
+export const updateMetrics = async (updates) => {
+  const metric = await getOrCreateMetrics();
+  return prisma.metric.update({
+    where: { id: metric.id },
+    data: updates,
+  });
+};
+
+export const incrementListedCount = async () => {
+  const metric = await getOrCreateMetrics();
+  return prisma.metric.update({
+    where: { id: metric.id },
+    data: { listedNFTs: { increment: 1 } },
+  });
+};
+
+export const decrementListedCount = async () => {
+  const metric = await getOrCreateMetrics();
+  return prisma.metric.update({
+    where: { id: metric.id },
+    data: { listedNFTs: { increment: -1 } },
+  });
 };

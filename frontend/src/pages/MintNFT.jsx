@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ethers } from 'ethers';
 import { uploadToIPFS } from '../utils/ipfs';
 import { mintNFTOnContract } from '../utils/mint';
+import { createAuthHeaders } from '../utils/auth';
 import './MintNFT.css';
 
 const UploadIcon = () => (
@@ -68,9 +69,10 @@ const MintNFT = () => {
       const signer = await provider.getSigner();
       const address = await signer.getAddress();
 
+      const headers = await createAuthHeaders(signer);
       await fetch('/api/nfts/mint', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ name, description, price, ipfsUrl: metadataURL, owner: address, listed: false }),
       });
 

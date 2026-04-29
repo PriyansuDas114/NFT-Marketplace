@@ -114,6 +114,7 @@ body { font-family: var(--font-sans); background: var(--c-bg); color: var(--c-te
 .btn-sm { padding: 7px 14px; font-size: 13px; }
 .btn-lg { padding: 14px 28px; font-size: 15px; }
 .btn-full { width: 100%; }
+.btn-mono { letter-spacing: 0.08em; }
 
 .input {
   width: 100%; background: var(--c-surface-2); border: 1px solid var(--c-border);

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { ethers } from 'ethers';
 import marketplaceAbi from '../abis/Marketplace.json';
+import { createAuthHeaders } from '../utils/auth';
 import './ListNFT.css';
 
 const CONTRACT_ADDRESS = import.meta.env.VITE_MARKETPLACE_ADDRESS || '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512';
@@ -69,9 +70,10 @@ const ListNFT = () => {
       await tx.wait();
 
       setStatus({ type: 'info', msg: 'Updating database…' });
+      const headers = await createAuthHeaders(signer);
       await axios.post('http://localhost:5000/api/nfts/list', {
         tokenId: selectedNFT.tokenId, price, category,
-      });
+      }, { headers });
 
       setStatus({ type: 'success', msg: 'NFT listed successfully!' });
       setNfts(prev => prev.filter(n => n.tokenId !== selectedNFT.tokenId));

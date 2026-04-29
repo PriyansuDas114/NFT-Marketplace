@@ -4,18 +4,66 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
+// ──────────────────────────────────────────────────────────
+//  NFT Model
+// ──────────────────────────────────────────────────────────
 model NFT {
-  id          Int      @id @default(autoincrement())
-  tokenId     String   @unique
-  name        String
-  description String
-  price       Float
-  image       String
-  ipfsUrl     String
-  owner       String
-  listed      Boolean   @default(false)
-  createdAt   DateTime  @default(now())
+  id                String   @id @default(cuid())
+  tokenId           Int      @unique
+  name              String   @db.VarChar(100)
+  description       String   @db.VarChar(1000)
+  ipfsUrl           String
+  price             String   @default("0")
+  owner             String   @db.VarChar(42) // Ethereum address
+  listed            Boolean  @default(false)
+  category          String?  @default("Art")
+  royaltyBps        Int      @default(500)
+  listingId         Int?     @unique
+  txHash            String?
+  traits            String?  @db.Text // JSON string
+  image             String?
+  collection        String   @default("NexMint Collection")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([owner])
+  @@index([listed])
+  @@index([category])
+  @@index([createdAt])
+}
+
+// ──────────────────────────────────────────────────────────
+//  Metric Model (aggregated stats)
+// ──────────────────────────────────────────────────────────
+model Metric {
+  id                String   @id @default(cuid())
+  totalNFTs         Int      @default(0)
+  listedNFTs        Int      @default(0)
+  totalVolume       String   @default("0")
+  floorPrice        String   @default("0")
+  avgPrice          String   @default("0")
+  totalTransactions Int      @default(0)
+  uniqueOwners      Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+// ──────────────────────────────────────────────────────────
+//  User Model
+// ──────────────────────────────────────────────────────────
+model User {
+  id        String   @id @default(cuid())
+  address   String   @unique @db.VarChar(42)
+  nonce     String?
+  username  String?
+  avatar    String?
+  bio       String?
+  website   String?
+  social    String?  @db.Text // JSON
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([address])
 }

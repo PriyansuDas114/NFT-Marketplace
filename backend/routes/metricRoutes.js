@@ -1,8 +1,13 @@
-import express from 'express';
-import { fetchMetrics } from '../controllers/metricsController.js';
+import { Router } from 'express';
+import { getMetrics, recomputeMetrics } from '../controllers/metricsController.js';
+import { requireWallet } from '../middleware/auth.js';
 
-const router = express.Router();
+const router = Router();
 
-router.get('/', fetchMetrics);
+// Public read
+router.get('/', getMetrics);
+
+// Owner-only recompute (add onlyOwner check for production)
+router.post('/recompute', requireWallet, recomputeMetrics);
 
 export default router;

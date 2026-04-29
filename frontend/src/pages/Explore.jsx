@@ -135,8 +135,8 @@ const DetailPanel = ({ nft, isOpen, onClose }) => {
               Buy Now
             </button>
             <button className="btn btn-secondary detail-watch-btn" disabled={!nft}>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M8 2l1.6 3.4L14 6.2l-3 2.9.7 4.1L8 11.1l-3.7 2.1.7-4.1L2 6.2l4.4-.8L8 2z" />
+              <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M8 1l2.4 5.1L16 6.8l-4 3.9 1 5.8L8 13.1l-5 2.4 1-5.8L0 6.8l5.6-.7L8 1z" />
               </svg>
             </button>
           </div>
