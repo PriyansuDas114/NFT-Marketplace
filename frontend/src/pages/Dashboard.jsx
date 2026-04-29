@@ -97,11 +97,11 @@ const MetricIcon = ({ type }) => {
 };
 
 const recentActivity = [
-  { type: 'mint',   title: 'Cosmic Dreams #42',  sub: '0x1a2B...4f9C',  value: '' },
-  { type: 'buy',    title: 'Pixel Samurai #7',   sub: '0xBead...c0fF',  value: '0.85 ETH' },
-  { type: 'list',   title: 'Meta Domain .xyz',   sub: '0xDead...Beef',  value: '3.1 ETH' },
-  { type: 'mint',   title: 'Galaxy Racer #12',   sub: '0xCafe...B00B',  value: '' },
-  { type: 'cancel', title: 'Synthwave Beat #3',  sub: '0x7357...Ab1e',  value: '' },
+  { type: 'buy',    nft: 'Nebula #42',       price: '0.42 ETH', from: '0xBead...c0fF' },
+  { type: 'mint',   nft: 'Solar Punk #91',   price: '—',        from: '0xF00d...D0gE' },
+  { type: 'list',   nft: 'Beat Drop #8',     price: '0.88 ETH', from: '0xCafe...1337' },
+  { type: 'buy',    nft: 'Glitch Ape #17',   price: '1.05 ETH', from: '0x1a2b...4f9C' },
+  { type: 'list',   nft: 'meta.eth #3300',   price: '3.2 ETH',  from: '0xDead...Beef' },
 ];
 
 const legendColors = [ACCENT, VIOLET, GREEN, GOLD];
@@ -193,41 +193,71 @@ const Dashboard = () => {
       <div className="activity-section">
         <div className="activity-card">
           <div className="activity-card__header">
-            Recent Activity
-            <button className="activity-card__see-all">see all →</button>
+            <div>
+              <div className="activity-card__title">Top Collections</div>
+              <div className="activity-card__subtitle">by 24h volume</div>
+            </div>
+            <button className="activity-card__see-all">SEE ALL</button>
           </div>
-          <div className="activity-list">
-            {recentActivity.map((item, i) => (
-              <div className="activity-item" key={i}>
-                <span className={`activity-dot activity-dot--${item.type}`} />
-                <div className="activity-item__info">
-                  <div className="activity-item__title">{item.title}</div>
-                  <div className="activity-item__sub">{item.sub} · {item.type}</div>
+          <div className="collections-list">
+            {[
+              { rank: 1, name: 'Glitch Apes', icon: '🦍', items: '10,000', vol: '847 ETH', change: '+14.2%', up: true },
+              { rank: 2, name: 'Nebula Protocol', icon: '🌌', items: '5,000', vol: '442 ETH', change: '+7.8%', up: true },
+              { rank: 3, name: 'Chain Knights', icon: '⚔️', items: '8,888', vol: '231 ETH', change: '-3.1%', up: false },
+              { rank: 4, name: 'Sound Waves', icon: '🎵', items: '2,100', vol: '188 ETH', change: '+22.4%', up: true },
+              { rank: 5, name: 'Meta Domains', icon: '🌐', items: '9,999', vol: '104 ETH', change: '+1.5%', up: true },
+            ].map((col) => (
+              <div className="collection-card" key={col.rank}>
+                <div className="collection-card__rank">#{col.rank}</div>
+                <div className="collection-card__icon">{col.icon}</div>
+                <div className="collection-card__info">
+                  <div className="collection-card__name">{col.name}</div>
+                  <div className="collection-card__items">{col.items} items</div>
                 </div>
-                {item.value && <span className="activity-item__value">{item.value}</span>}
+                <div className="collection-card__volume">{col.vol}</div>
+                <div className={`collection-card__change ${col.up ? 'up' : 'down'}`}>
+                  {col.change}
+                </div>
               </div>
             ))}
           </div>
         </div>
 
         <div className="activity-card">
-          <div className="activity-card__header">Top Collections</div>
-          <div className="activity-list">
-            {[
-              { name: 'Cosmic Dreams', floor: '0.42', vol: '12.4 ETH' },
-              { name: 'Pixel Warriors', floor: '0.18', vol: '8.1 ETH' },
-              { name: 'Sound Waves', floor: '0.65', vol: '6.3 ETH' },
-              { name: 'Meta Domains', floor: '1.20', vol: '5.7 ETH' },
-            ].map((col, i) => (
-              <div className="activity-item" key={i}>
-                <span className="activity-dot activity-dot--buy" />
-                <div className="activity-item__info">
-                  <div className="activity-item__title">{col.name}</div>
-                  <div className="activity-item__sub">Floor: {col.floor} ETH</div>
+          <div className="activity-card__header">
+            <div>
+              <div className="activity-card__title">Recent Activity</div>
+              <div className="activity-card__subtitle">Live feed</div>
+            </div>
+            <span className="live-indicator">● LIVE</span>
+          </div>
+          <div className="activity-table">
+            <div className="activity-table__header">
+              <div className="activity-table__col activity-table__col--event">EVENT</div>
+              <div className="activity-table__col activity-table__col--nft">NFT</div>
+              <div className="activity-table__col activity-table__col--price">PRICE</div>
+              <div className="activity-table__col activity-table__col--from">FROM</div>
+            </div>
+            <div className="activity-table__body">
+              {recentActivity.map((item, i) => (
+                <div className="activity-table__row" key={i}>
+                  <div className="activity-table__col activity-table__col--event">
+                    <span className={`activity-badge activity-badge--${item.type}`}>
+                      {item.type.toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="activity-table__col activity-table__col--nft">
+                    {item.nft}
+                  </div>
+                  <div className="activity-table__col activity-table__col--price">
+                    {item.price}
+                  </div>
+                  <div className="activity-table__col activity-table__col--from">
+                    {item.from}
+                  </div>
                 </div>
-                <span className="activity-item__value">{col.vol}</span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>

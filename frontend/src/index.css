@@ -5,12 +5,12 @@
 ───────────────────────────────────────── */
 
 :root {
-  --c-bg:          #0b0b0d;
-  --c-surface:     #111116;
-  --c-surface-2:   #17171e;
-  --c-surface-3:   #1e1e28;
-  --c-border:      rgba(255,255,255,0.07);
-  --c-border-2:    rgba(255,255,255,0.13);
+  --c-bg:          #000000;
+  --c-surface:     #0f0f0f;
+  --c-surface-2:   #151515;
+  --c-surface-3:   #1a1a1a;
+  --c-border:      rgba(255,255,255,0.08);
+  --c-border-2:    rgba(255,255,255,0.15);
 
   --c-accent:      #f97316;
   --c-accent-dim:  rgba(249,115,22,0.15);
@@ -25,9 +25,9 @@
   --c-red-dim:     rgba(239,68,68,0.12);
   --c-gold:        #eab308;
 
-  --c-text-1:  #f0ede8;
-  --c-text-2:  #9d9aa0;
-  --c-text-3:  #5c5960;
+  --c-text-1:  #ffffff;
+  --c-text-2:  #a0a0a0;
+  --c-text-3:  #666666;
 
   --font-display: 'Bebas Neue', cursive;
   --font-sans:    'DM Sans', sans-serif;
