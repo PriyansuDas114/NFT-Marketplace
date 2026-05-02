@@ -6,6 +6,8 @@ import MintNFT from './pages/MintNFT';
 import ListNFT from './pages/ListNFT';
 import Explore from './pages/Explore';
 import Gallery from './pages/Gallery';
+import NFTDetail from './pages/NFTDetail';
+import UserProfile from './pages/UserProfile';
 import PageTransitionWrapper from './components/PageTransitionWrapper';
 import './App.css';
 
@@ -18,11 +20,13 @@ const App = () => {
         <Header />
         <div className="page-content-wrapper">
           <Routes location={location}>
-            <Route path="/"        element={<PageTransitionWrapper><Dashboard /></PageTransitionWrapper>} />
-            <Route path="/mint"    element={<PageTransitionWrapper><MintNFT /></PageTransitionWrapper>} />
-            <Route path="/list"    element={<PageTransitionWrapper><ListNFT /></PageTransitionWrapper>} />
-            <Route path="/explore" element={<PageTransitionWrapper><Explore /></PageTransitionWrapper>} />
-            <Route path="/gallery" element={<PageTransitionWrapper><Gallery /></PageTransitionWrapper>} />
+            <Route path="/"              element={<PageTransitionWrapper><Dashboard /></PageTransitionWrapper>} />
+            <Route path="/mint"          element={<PageTransitionWrapper><MintNFT /></PageTransitionWrapper>} />
+            <Route path="/list"          element={<PageTransitionWrapper><ListNFT /></PageTransitionWrapper>} />
+            <Route path="/explore"       element={<PageTransitionWrapper><Explore /></PageTransitionWrapper>} />
+            <Route path="/nft/:id"       element={<PageTransitionWrapper><NFTDetail /></PageTransitionWrapper>} />
+            <Route path="/profile/:address" element={<PageTransitionWrapper><UserProfile /></PageTransitionWrapper>} />
+            <Route path="/gallery"       element={<PageTransitionWrapper><Gallery /></PageTransitionWrapper>} />
           </Routes>
         </div>
       </div>

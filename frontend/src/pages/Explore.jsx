@@ -3,6 +3,8 @@ import { createPortal } from 'react-dom';
 import axios from 'axios';
 import NFTCard from '../components/NFTCard';
 import { SkeletonCard } from '../components/Spinner';
+import { useNFTContract } from '../hooks/useNFTContract';
+import { useWallet } from '../context/WalletContext';
 import { sampleNFTs } from '../data/sampleNFTs';
 import './Explore.css';
 
@@ -17,21 +19,39 @@ const EmptyIcon = () => (
   </svg>
 );
 
-const DetailPanel = ({ nft, isOpen, onClose }) => {
+// ────────────────────────────────────────────────────────────
+//  DetailPanel with integrated buy flow
+// ────────────────────────────────────────────────────────────
+const DetailPanel = ({ nft, isOpen, onClose, ethUsdRate, onBuy }) => {
+  const [txStatus, setTxStatus] = useState(null);
+  const [txHash, setTxHash] = useState(null);
+
   const EthIcon = () => (
     <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
       <path d="M11.944 17.97L4.58 13.62 11.943 24l7.37-10.38-7.372 4.35h.003zM12.056 0L4.69 12.223l7.365 4.354 7.365-4.35L12.056 0z" />
     </svg>
   );
 
-  const handleBuy = () => {
-    if (!nft) return;
-    alert(`Buy flow for "${nft.name}" — connect marketplace contract to proceed.`);
-    onClose();
+  const handleBuyClick = async () => {
+    if (!nft || !onBuy) return;
+    try {
+      setTxStatus('pending');
+      setTxHash(null);
+      const receipt = await onBuy(nft);
+      setTxHash(receipt?.transactionHash);
+      setTxStatus('success');
+    } catch (err) {
+      console.error('Buy failed:', err);
+      setTxStatus('error');
+      setTimeout(() => setTxStatus(null), 3000);
+    }
   };
 
   const imageSrc = nft?.image || nft?.imageUrl || nft?.ipfsUrl;
-  const usdPrice = nft?.price ? (parseFloat(nft.price) * 3241).toLocaleString(undefined, { maximumFractionDigits: 0 }) : null;
+  const usdPrice = nft?.price && ethUsdRate
+    ? (parseFloat(nft.price) * ethUsdRate).toLocaleString(undefined, { maximumFractionDigits: 0 })
+    : null;
+  
   const fallbackTraitsByCategory = {
     Music: [
       { t: 'BPM', v: '128' },
@@ -130,9 +150,37 @@ const DetailPanel = ({ nft, isOpen, onClose }) => {
             )}
           </div>
 
+          {/* Transaction Status Display */}
+          {txStatus && (
+            <div className={`tx-status tx-status-${txStatus}`}>
+              {txStatus === 'pending' && (
+                <>
+                  <div className="tx-spinner"></div>
+                  <span>Transaction pending...</span>
+                </>
+              )}
+              {txStatus === 'success' && (
+                <>
+                  <span>✓ Purchase successful!</span>
+                  {txHash && (
+                    <a href={`https://etherscan.io/tx/${txHash}`} target="_blank" rel="noopener noreferrer" className="tx-hash-link">
+                      View on Etherscan
+                    </a>
+                  )}
+                </>
+              )}
+              {txStatus === 'error' && <span>✕ Transaction failed. Please try again.</span>}
+            </div>
+          )}
+
           <div className="detail-actions">
-            <button className="btn btn-primary" onClick={handleBuy} style={{ flex: 1 }} disabled={!nft}>
-              Buy Now
+            <button
+              className="btn btn-primary"
+              onClick={handleBuyClick}
+              disabled={!nft || txStatus === 'pending'}
+              style={{ flex: 1 }}
+            >
+              {txStatus === 'pending' ? 'Processing...' : 'Buy Now'}
             </button>
             <button className="btn btn-secondary detail-watch-btn" disabled={!nft}>
               <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
@@ -150,12 +198,35 @@ const DetailPanel = ({ nft, isOpen, onClose }) => {
 };
 
 const Explore = () => {
+  const { account } = useWallet();
+  const { buyNFT } = useNFTContract();
+  
   const [nfts, setNfts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState('All');
   const [sortBy, setSortBy] = useState('Newest first');
   const [selectedNFT, setSelectedNFT] = useState(null);
   const [detailPanelOpen, setDetailPanelOpen] = useState(false);
+  const [ethUsdRate, setEthUsdRate] = useState(3241); // Fallback rate
+
+  // Fetch live ETH/USD rate
+  useEffect(() => {
+    const fetchEthPrice = async () => {
+      try {
+        const res = await axios.get(
+          'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd'
+        );
+        setEthUsdRate(res.data.ethereum.usd);
+      } catch (err) {
+        console.warn('Failed to fetch ETH rate, using fallback:', err);
+        setEthUsdRate(3241); // Fallback
+      }
+    };
+    
+    fetchEthPrice();
+    const interval = setInterval(fetchEthPrice, 60000); // Refresh every minute
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const useHtmlExamples = async () => {
@@ -240,8 +311,35 @@ const Explore = () => {
     setDetailPanelOpen(false);
   };
 
-  const handleBuy = (nft) => {
-    alert(`Buy flow for "${nft.name}" — connect marketplace contract to proceed.`);
+  // Integrated buy handler with backend sync
+  const handleBuy = async (nft) => {
+    if (!account || !nft) throw new Error('Wallet not connected or NFT not found');
+    
+    // Call marketplace contract
+    const receipt = await buyNFT(nft.listingId, nft.price);
+    
+    // Sync with backend
+    try {
+      await axios.post('/api/nfts/buy', {
+        tokenId: nft.tokenId,
+        listingId: nft.listingId,
+        newOwner: account,
+        txHash: receipt.transactionHash,
+      });
+    } catch (err) {
+      console.warn('Failed to sync purchase to backend:', err);
+      // Don't throw — blockchain tx succeeded even if DB sync failed
+    }
+    
+    return receipt;
+  };
+
+  const handleNFTBuy = (nft) => {
+    if (!account) {
+      alert('Please connect your wallet to purchase.');
+      return;
+    }
+    // The DetailPanel will handle the actual buy call
   };
 
   return (
@@ -312,6 +410,8 @@ const Explore = () => {
           nft={selectedNFT}
           isOpen={detailPanelOpen}
           onClose={handleCloseDetail}
+          ethUsdRate={ethUsdRate}
+          onBuy={handleBuy}
         />
       )}
     </div>

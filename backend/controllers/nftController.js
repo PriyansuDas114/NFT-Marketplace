@@ -1,6 +1,7 @@
 import { prisma } from '../config/db.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { PAGINATION } from '../config/constants.js';
+import { incrementListedCount, decrementListedCount, recordSale } from './metricsController.js';
 
 /**
  * asyncHandler — eliminates try/catch boilerplate in every handler.
@@ -130,6 +131,7 @@ export const mintNFT = asyncHandler(async (req, res) => {
 // ── POST /api/nfts/list ───────────────────────────────────────
 /**
  * listNFT — Update NFT listing status and price.
+ * Increments listedNFTs metric if this is the first time listing.
  */
 export const listNFT = asyncHandler(async (req, res) => {
   const { tokenId, price, category, listingId } = req.body;
@@ -144,6 +146,8 @@ export const listNFT = asyncHandler(async (req, res) => {
 
   if (!nft) throw new AppError('NFT not found', 404);
 
+  const wasListed = nft.listed;
+
   const updated = await prisma.nFT.update({
     where: { tokenId: parseInt(tokenId) },
     data: {
@@ -154,19 +158,31 @@ export const listNFT = asyncHandler(async (req, res) => {
     },
   });
 
+  // Increment metrics only if newly listed
+  if (!wasListed) {
+    await incrementListedCount(1);
+  }
+
   res.json(updated);
 });
 
 // ── POST /api/nfts/buy ────────────────────────────────────────
 /**
  * buyNFT — Update NFT ownership after purchase.
+ * Decrements listedNFTs metric and records sale volume.
  */
 export const buyNFT = asyncHandler(async (req, res) => {
-  const { tokenId, listingId, newOwner } = req.body;
+  const { tokenId, listingId, newOwner, txHash } = req.body;
 
   if (!tokenId || !newOwner) {
     throw new AppError('tokenId and newOwner are required', 400);
   }
+
+  const nft = await prisma.nFT.findUnique({
+    where: { tokenId: parseInt(tokenId) },
+  });
+
+  if (!nft) throw new AppError('NFT not found', 404);
 
   const updated = await prisma.nFT.update({
     where: { tokenId: parseInt(tokenId) },
@@ -174,8 +190,19 @@ export const buyNFT = asyncHandler(async (req, res) => {
       owner: newOwner.toLowerCase(),
       listed: false,
       listingId: null,
+      txHash: txHash || nft.txHash,
     },
   });
+
+  // Decrement metrics
+  if (nft.listed) {
+    await decrementListedCount(1);
+  }
+
+  // Record sale volume
+  if (nft.price) {
+    await recordSale(nft.price);
+  }
 
   res.json(updated);
 });
@@ -183,11 +210,18 @@ export const buyNFT = asyncHandler(async (req, res) => {
 // ── POST /api/nfts/cancel-listing ─────────────────────────────
 /**
  * cancelListing — Delist an NFT.
+ * Decrements listedNFTs metric.
  */
 export const cancelListing = asyncHandler(async (req, res) => {
   const { tokenId } = req.body;
 
   if (!tokenId) throw new AppError('tokenId is required', 400);
+
+  const nft = await prisma.nFT.findUnique({
+    where: { tokenId: parseInt(tokenId) },
+  });
+
+  if (!nft) throw new AppError('NFT not found', 404);
 
   const updated = await prisma.nFT.update({
     where: { tokenId: parseInt(tokenId) },
@@ -196,6 +230,11 @@ export const cancelListing = asyncHandler(async (req, res) => {
       listingId: null,
     },
   });
+
+  // Decrement metrics
+  if (nft.listed) {
+    await decrementListedCount(1);
+  }
 
   res.json(updated);
 });

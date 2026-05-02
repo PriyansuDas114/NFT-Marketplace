@@ -11,10 +11,12 @@ import http           from 'http';
 import cors           from 'cors';
 import helmet         from 'helmet';
 import { Server }     from 'socket.io';
+import { ethers }     from 'ethers';
 
 import connectDB      from './config/db.js';
 import { apiLimiter } from './middleware/rateLimit.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
+import { startEventIndexer, stopEventIndexer } from './workers/eventIndexer.js';
 
 import nftRoutes      from './routes/nftRoutes.js';
 import metricRoutes   from './routes/metricRoutes.js';
@@ -23,16 +25,22 @@ import userRoutes     from './routes/userRoutes.js';
 // ─────────────────────────────────────────────────────────────
 //  NexMint API Server
 //
-//  Changes from original:
+//  Stack:
+//    • Express.js for HTTP routing
+//    • Prisma ORM + PostgreSQL for database
+//    • Socket.io for real-time updates
+//    • ethers.js for blockchain event listening
+//    • Helmet for security headers
+//    • CORS whitelist + rate limiting
+//
+//  Key features:
 //    [1] Env validated at boot — server refuses to start on bad config
 //    [2] Helmet security headers (CSP, HSTS, X-Frame-Options, etc.)
 //    [3] CORS whitelist — no more `origin: '*'` in production
 //    [4] Global rate limiter on all /api/* routes
-//    [5] Socket.io stored on app for use in controllers
+//    [5] Socket.io for real-time metrics updates
 //    [6] Graceful shutdown — drains connections before exit
-//    [7] Removed Prisma — Mongoose only
-//    [8] Both Mongoose models (dropped duplicate ORM import)
-//    [9] Proper 404 + global error handler middleware
+//    [7] Event indexer — syncs blockchain events to PostgreSQL
 // ─────────────────────────────────────────────────────────────
 
 // ── Express app setup ─────────────────────────────────────────
@@ -126,18 +134,36 @@ io.on('connection', (socket) => {
   socket.on('disconnect', (reason) => {
     console.info(`[Socket] Client disconnected: ${socket.id} — ${reason}`);
   });
-
-  // Send current metrics immediately on connect
-  import('./models/metricModel.js').then(({ default: Metric }) => {
-    Metric.getOrCreate().then(metrics => {
-      socket.emit('metricsUpdate', { metrics });
-    }).catch(() => {});
-  });
 });
+
+// ── Event Indexer provider ────────────────────────────────────
+// Create provider for listening to blockchain events
+let provider = null;
+let eventIndexerRunning = false;
+
+const initializeEventIndexer = () => {
+  try {
+    // Use JSON-RPC provider to listen to events
+    // In development, this connects to Hardhat. In production, use Infura/Alchemy
+    const rpcUrl = process.env.RPC_URL || 'http://127.0.0.1:8545';
+    provider = new ethers.JsonRpcProvider(rpcUrl);
+    console.info(`[Event Indexer] RPC provider initialized: ${rpcUrl}`);
+  } catch (err) {
+    console.warn('[Event Indexer] Failed to initialize provider:', err.message);
+  }
+};
 
 // ── Start ─────────────────────────────────────────────────────
 const start = async () => {
   await connectDB();
+  console.info('[DB] PostgreSQL connected via Prisma');
+
+  // Initialize blockchain provider and start event indexer
+  initializeEventIndexer();
+  if (provider) {
+    await startEventIndexer(provider);
+    eventIndexerRunning = true;
+  }
 
   server.listen(env.PORT, () => {
     console.info(`[Server] NexMint API running on http://localhost:${env.PORT}`);
@@ -147,15 +173,19 @@ const start = async () => {
 };
 
 // ── Graceful shutdown ─────────────────────────────────────────
-// [6] On SIGTERM/SIGINT: close HTTP server first (stop accepting new
-//     requests), then disconnect from MongoDB.
-const shutdown = (signal) => {
+// [6] On SIGTERM/SIGINT: close event indexer, HTTP server, then DB
+const shutdown = async (signal) => {
   console.info(`\n[Server] ${signal} received. Shutting down gracefully…`);
+  
+  // Stop event indexer
+  if (eventIndexerRunning && provider) {
+    await stopEventIndexer(provider);
+  }
+
   server.close(async () => {
     console.info('[Server] HTTP server closed');
-    const mongoose = (await import('mongoose')).default;
-    await mongoose.connection.close();
-    console.info('[DB] MongoDB connection closed');
+    // Prisma connection will auto-close when process exits
+    console.info('[DB] Closing Prisma connection');
     process.exit(0);
   });
 

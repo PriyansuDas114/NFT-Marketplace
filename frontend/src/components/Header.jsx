@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { ethers } from 'ethers';
+import { useWallet } from '../context/WalletContext';
 import './Header.css';
 
 const pageTitles = {
@@ -9,6 +9,7 @@ const pageTitles = {
   '/list':    'List NFT',
   '/explore': 'Explore',
   '/gallery': 'Gallery',
+  '/profile': 'Profile',
 };
 
 const WalletIcon = () => (
@@ -26,42 +27,28 @@ const SearchIcon = () => (
   </svg>
 );
 
+const DisconnectIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+    <polyline points="16 8 20 12 16 16"/>
+    <line x1="9" y1="12" x2="20" y2="12"/>
+  </svg>
+);
+
 const Header = () => {
-  const [account, setAccount] = useState(null);
+  const { account, isConnecting, error, connect, disconnect } = useWallet();
   const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
-  const title = pageTitles[location.pathname] || 'NexMint';
-
-  const connectWallet = async () => {
-    if (!window.ethereum) {
-      alert('Please install MetaMask to connect your wallet.');
-      return;
-    }
-    try {
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      await provider.send('eth_requestAccounts', []);
-      const signer = await provider.getSigner();
-      const address = await signer.getAddress();
-      setAccount(address);
-    } catch (err) {
-      console.error('Wallet connection failed:', err);
-    }
-  };
-
-  useEffect(() => {
-    // Auto-detect already-connected wallet
-    if (window.ethereum?.selectedAddress) {
-      setAccount(window.ethereum.selectedAddress);
-    }
-    // Listen for account changes
-    const handleAccountsChanged = (accounts) => {
-      setAccount(accounts.length > 0 ? accounts[0] : null);
-    };
-    window.ethereum?.on('accountsChanged', handleAccountsChanged);
-    return () => {
-      window.ethereum?.removeListener('accountsChanged', handleAccountsChanged);
-    };
-  }, []);
+  
+  // Get page title with support for dynamic routes
+  let title = 'NexMint';
+  if (location.pathname.startsWith('/nft/')) {
+    title = 'NFT Details';
+  } else if (location.pathname.startsWith('/profile/')) {
+    title = 'Profile';
+  } else {
+    title = pageTitles[location.pathname] || 'NexMint';
+  }
 
   const shortAddress = account
     ? `${account.slice(0, 6)}...${account.slice(-4)}`
@@ -83,16 +70,31 @@ const Header = () => {
       </div>
       <div className="header-right">
         {account ? (
-          <div className="wallet-chip" title={account}>
-            <div className="wallet-avatar" />
-            <span className="wallet-address">{shortAddress}</span>
+          <div className="wallet-menu">
+            <div className="wallet-chip" title={account}>
+              <div className="wallet-avatar" />
+              <span className="wallet-address">{shortAddress}</span>
+            </div>
+            <button 
+              className="wallet-disconnect-btn" 
+              onClick={disconnect}
+              title="Disconnect wallet"
+              aria-label="Disconnect"
+            >
+              <DisconnectIcon />
+            </button>
           </div>
         ) : (
-          <button className="wallet-btn" onClick={connectWallet}>
+          <button 
+            className="wallet-btn" 
+            onClick={connect}
+            disabled={isConnecting}
+          >
             <WalletIcon />
-            Connect Wallet
+            {isConnecting ? 'Connecting...' : 'Connect Wallet'}
           </button>
         )}
+        {error && <div className="wallet-error-tooltip" title={error}>⚠</div>}
       </div>
     </header>
   );

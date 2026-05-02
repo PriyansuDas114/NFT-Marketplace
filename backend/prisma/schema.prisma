@@ -15,6 +15,7 @@ model NFT {
   name              String   @db.VarChar(100)
   description       String   @db.VarChar(1000)
   ipfsUrl           String
+  url               String?  // Canonical URL to this NFT (e.g., https://marketplace.com/nft/{tokenId})
   price             String   @default("0")
   owner             String   @db.VarChar(42) // Ethereum address
   listed            Boolean  @default(false)
